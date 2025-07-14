@@ -1,0 +1,17 @@
+services:
+  python-uv:
+    build:
+      context: .
+    container_name: python-uv
+    restart: unless-stopped
+    init: true
+    env_file: ./.env  # Uncomment if .env file exists
+    ports:
+      - "8000:8000"  # Exposed by Dockerfile (uvicorn)
+    networks:
+      - backend
+    # If your app requires a database or other services, add them below and update depends_on as needed
+
+networks:
+  backend:
+    driver: bridge
