@@ -10,6 +10,7 @@ async def get_services(session: AsyncSession):
         return services
     except Exception as e:
         print(f"Error fetching services: {e}")
+        await session.rollback()
         return []
     
 async def create_service(session: AsyncSession, service_data: dict):
@@ -22,6 +23,7 @@ async def create_service(session: AsyncSession, service_data: dict):
         return service
     except Exception as e:
         print(f"Error creating service: {e}")
+        await session.rollback()
         return None
 
 async def update_service_quantity(session: AsyncSession, service_id: int, quantity: int):
@@ -36,7 +38,9 @@ async def update_service_quantity(session: AsyncSession, service_id: int, quanti
             return service
         else:
             print(f"Service with id {service_id} not found.")
+            await session.rollback()
             return None
     except Exception as e:
         print(f"Error updating service quantity: {e}")
+        await session.rollback()
         return None

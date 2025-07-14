@@ -9,6 +9,7 @@ from app.schemas.service import (
     ListServicesResponse,
     UpdateServiceQuantityResponse,
 )
+from fastapi.responses import JSONResponse
 
 service_router = APIRouter()
 
@@ -28,20 +29,22 @@ async def read_services(session: AsyncSession = Depends(get_session)):
             "data": services
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
 # Create new service
 @service_router.post("/", response_model=CreateServiceResponse)
 async def create_new_service(service: dict, session: AsyncSession = Depends(get_session)):
     try:
         new_service = await create_service(session, service)
+        if not new_service:
+            return JSONResponse({"status": "error", "message": "Failed to create service", "data": new_service}, status_code=500)
         return {
             "status": "success",
             "message": "Service created successfully",
             "data": new_service
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
 # Update quantity
 @service_router.put("/{service_id}/quantity", response_model=UpdateServiceQuantityResponse)
@@ -49,11 +52,11 @@ async def modify_service_quantity(service_id: int, quantity: int, session: Async
     try:
         updated_service = await update_service_quantity(session, service_id, quantity)
         if not updated_service:
-            raise HTTPException(status_code=404, detail="Service not found")
+            return JSONResponse({"status": "error", "message": "Service not found"}, status_code=404)
         return {
             "status": "success",
             "message": "Service quantity updated successfully",
             "data": updated_service
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)

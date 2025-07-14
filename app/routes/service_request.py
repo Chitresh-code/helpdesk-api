@@ -9,6 +9,7 @@ from app.schemas.service_request import (
     ListServiceRequestsResponse,
     UpdateServiceRequestStatusResponse,
 )
+from fastapi.responses import JSONResponse
 
 service_request_router = APIRouter()
 
@@ -26,7 +27,7 @@ async def read_service_requests(session: AsyncSession = Depends(get_session)):
             "data": service_requests
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
 @service_request_router.put("/{request_id}/status", response_model=UpdateServiceRequestStatusResponse)
 async def modify_service_request_status(request_id: int, status: str, session: AsyncSession = Depends(get_session)):
@@ -39,9 +40,9 @@ async def modify_service_request_status(request_id: int, status: str, session: A
                 "data": updated_request
             }
         else:
-            raise HTTPException(status_code=404, detail="Service request not found.")
+            return JSONResponse({"status": "error", "message": "ServiceRequest not found"}, status_code=404)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
 @service_request_router.post("/", response_model=CreateServiceRequestResponse)
 async def create_new_service_request(request: dict, session: AsyncSession = Depends(get_session)):
@@ -59,4 +60,4 @@ async def create_new_service_request(request: dict, session: AsyncSession = Depe
             "data": new_request
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)

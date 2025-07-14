@@ -10,6 +10,7 @@ async def get_service_requests(session: AsyncSession):
         return service_requests
     except Exception as e:
         print(f"Error fetching service requests: {e}")
+        await session.rollback()
         return []
     
 async def create_service_request(session: AsyncSession, service_request: ServiceRequest):
@@ -21,6 +22,7 @@ async def create_service_request(session: AsyncSession, service_request: Service
         return service_request
     except Exception as e:
         print(f"Error creating service request: {e}")
+        await session.rollback()
         return None
     
 async def update_service_request_status(session: AsyncSession, request_id: int, status: str):
@@ -35,7 +37,9 @@ async def update_service_request_status(session: AsyncSession, request_id: int, 
             return service_request
         else:
             print(f"ServiceRequest with id {request_id} not found.")
+            await session.rollback()
             return None
     except Exception as e:
         print(f"Error updating service request status: {e}")
+        await session.rollback()
         return None
