@@ -1,0 +1,14 @@
+[project]
+name = "it-helpdesk-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "asyncpg>=0.30.0",
+    "fastapi>=0.116.1",
+    "greenlet>=3.2.3",
+    "python-dotenv>=1.1.1",
+    "sqlmodel[asyncio]>=0.0.24",
+    "uvicorn>=0.35.0",
+]
